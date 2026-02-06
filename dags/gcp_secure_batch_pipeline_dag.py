@@ -1,15 +1,21 @@
+import logging
 import os
 from datetime import datetime, timedelta
 from airflow.models.dag import DAG
 from airflow.providers.google.cloud.sensors.gcs import GCSObjectExistenceSensor
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 from airflow.operators.bash import BashOperator
+def on_failure_callback(context):
+    dag_run = context.get('dag_run')
+    task_instance = context.get('task_instance')
+    logging.error(f"DAG failed: {dag_run.dag_id}, Task: {task_instance.task_id}, Run ID: {dag_run.run_id}, Log URL: {task_instance.log_url}")
 default_args = {
     'owner': 'Thiago William',
     'start_date': datetime(2026, 2, 6),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
     'project_id': os.environ.get("GCP_PROJECT_ID"),
+    'on_failure_callback': on_failure_callback,
 }
 DBT_ENV_VARS = {
     "GCP_PROJECT_ID": os.environ.get("GCP_PROJECT_ID"),
@@ -22,7 +28,7 @@ with DAG(
     default_args=default_args,
     schedule_interval='@daily',
     catchup=False,
-    tags=['gcp', 'dbt', 'data-governance'],
+    tags=['gcp', 'dbt', 'data-governance', 'finops'],
     description='Orchestrates a secure batch data pipeline with dbt and PII hashing.'
 ) as dag:
     sense_new_file = GCSObjectExistenceSensor(
