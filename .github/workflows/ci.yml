@@ -1,0 +1,135 @@
+name: CI/CD Pipeline - Batch Data Lakehouse
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # Python Linter and Type Checker
+  lint_and_type_check_python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # Specify Python version as per project
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black mypy pandas pydantic google-cloud-storage # Install necessary packages
+          # Ensure dbt-bigquery is installed for any Python components that might use it
+          pip install dbt-bigquery
+      - name: Run Flake8 Linter
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+      - name: Run Black Formatter (check only)
+        run: black . --check
+      - name: Run Mypy Type Checker
+        run: mypy src/
+
+  # Python Unit Tests
+  test_python_unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pandas pydantic google-cloud-storage
+          # Add any other test-specific dependencies here
+      - name: Run Pytest
+        run: pytest src/ # Assuming tests are within src/ or a dedicated tests/ folder
+
+  # Terraform Validation and Linting
+  validate_terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.x
+      - name: Terraform Init
+        run: terraform init -backend=false
+        working-directory: infra/
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: infra/
+      - name: Terraform Format Check
+        run: terraform fmt -check
+        working-directory: infra/
+
+  # dbt Project Validation and Tests
+  validate_and_test_dbt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install dbt-bigquery
+        run: |
+          python -m pip install --upgrade pip
+          pip install dbt-bigquery
+          # dbt-expectations if used in schema.yml
+          pip install ddbt-expectations
+      - name: Configure GCP Credentials for dbt
+        # This step is CRITICAL for dbt to connect to BigQuery.
+        # It uses a GitHub Secret named 'GCP_SERVICE_ACCOUNT_KEY' which should contain
+        # the JSON key of a Service Account with BigQuery Data Editor permissions.
+        # DO NOT store your service account key directly in your repository.
+        env:
+          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        run: |
+          mkdir -p ~/.dbt
+          echo "gcp_secure_batch_dwh:
+            target: ci
+            outputs:
+              ci:
+                type: bigquery
+                method: service-account
+                project: ${{ secrets.GCP_PROJECT_ID }} # Use GitHub Secret for Project ID
+                dataset: dbt_ci_dataset # A dedicated dataset for CI tests
+                threads: 4
+                keyfile: /tmp/gcp-key.json" > ~/.dbt/profiles.yml
+          echo "$GCP_SERVICE_ACCOUNT_KEY" > /tmp/gcp-key.json
+        working-directory: dbt_project/
+      - name: dbt Debug (checks connectivity and configuration)
+        run: dbt debug --profile gcp_secure_batch_dwh
+        working-directory: dbt_project/
+      - name: dbt Parse (validates project syntax)
+        run: dbt parse
+        working-directory: dbt_project/
+      - name: dbt Test (runs data quality tests)
+        run: dbt test --profile gcp_secure_batch_dwh
+        working-directory: dbt_project/
+
+  # Airflow DAG Validation
+  validate_airflow_dags:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install Airflow dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Install core Airflow and necessary providers
+          pip install apache-airflow google-cloud-storage apache-airflow-providers-cncf-kubernetes
+          # Install Pydantic as it's used in the DAG's script (indirectly)
+          pip install pydantic pandas
+      - name: Airflow DAG Lint Check
+        run: airflow dags lint dags/
