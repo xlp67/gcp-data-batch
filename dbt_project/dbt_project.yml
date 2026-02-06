@@ -1,0 +1,22 @@
+name: 'gcp_secure_batch_dwh'
+version: '1.0.0'
+config-version: 2
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+clean-targets:
+  - "target"
+  - "dbt_packages"
+vars:
+  pii_hashing_salt: "{{ env_var('DBT_PII_SALT', 'default-salt-if-not-set') }}"
+models:
+  gcp_secure_batch_dwh:
+    gold:
+      +materialized: table
+    silver:
+      +materialized: view
+    bronze:
+      +materialized: view
