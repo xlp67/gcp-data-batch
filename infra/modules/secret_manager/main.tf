@@ -2,7 +2,7 @@ resource "google_secret_manager_secret" "secret" {
   project   = var.gcp_project_id
   secret_id = var.secret_id
   replication {
-    automatic {}
+    auto {}
   }
 }
 resource "google_secret_manager_secret_version" "secret_version" {
