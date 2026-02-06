@@ -1,0 +1,24 @@
+version: 2
+sources:
+  - name: gcs_raw_zone
+    description: "Source data from GCS raw zone, representing raw telemetry files."
+    database: "{{ env_var('GCP_PROJECT_ID') }}"
+    schema: bronze_layer
+    tables:
+      - name: external_telemetry_data
+        description: "External table pointing to CSVs in gs://<project-id>-data-raw-zone/"
+        columns:
+          - name: device_id
+            description: "Unique identifier for the sensor device."
+          - name: timestamp
+            description: "Timestamp of the reading."
+          - name: temperature
+            description: "Temperature reading."
+          - name: humidity
+            description: "Humidity reading in percentage."
+          - name: operator_name
+            description: "PII: Name of the operator on duty."
+          - name: operator_email
+            description: "PII: Email of the operator for contact."
+          - name: status_code
+            description: "Optional status code from the device."
