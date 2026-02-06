@@ -1,45 +1,13 @@
-# GEMINI.md - Project Context
+# GEMINI.md
 
-This file provides essential context for the Gemini CLI to understand and assist with this project.
+Este arquivo (`GEMINI.md`) fornece contexto essencial para a CLI Gemini entender e auxiliar neste projeto.
 
-## Project Overview
+Para a documentação completa, detalhada e persuasiva do projeto "Secure Batch Data Lakehouse on GCP", por favor, consulte o arquivo principal:
 
-This project appears to be a data processing batch job on Google Cloud Platform (GCP). 
+➡️ **[README.md](./README.md)**
 
-## Assumed Technologies:
-
-*   **Language:** Python
-*   **Cloud Provider:** Google Cloud Platform (GCP)
-
-## Building and Running
-
-### Prerequisites
-
-*   Python 3.x
-*   pip
-*   Google Cloud SDK
-
-### Installation
-
-```bash
-pip install -r requirements.txt
-```
-
-### Running the Application
-
-```bash
-python main.py
-```
-
-### Testing
-
-```bash
-pytest
-```
-
-## Development Conventions
-
-*   **Code Style:** Please specify the code style (e.g., PEP 8, Black).
-*   **Testing:** Please describe the testing framework and practices (e.g., pytest, unittest).
-*   **Branching Strategy:** Please describe the branching strategy (e.g., Gitflow).
-*   **Commit Messages:** Please specify the commit message format.
+O `README.md` contém:
+*   Uma visão geral detalhada da arquitetura.
+*   Detalhes sobre a stack tecnológica.
+*   Justificativas de alto nível para decisões arquitetônicas, focando em Segurança (LGPD/GDPR), FinOps (Otimização de Custos e Performance) e Qualidade de Código.
+*   Instruções passo a passo para configurar e executar o projeto.
