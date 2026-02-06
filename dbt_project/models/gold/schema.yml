@@ -1,0 +1,31 @@
+version: 2
+models:
+  - name: fct_daily_device_summary
+    description: "Gold layer table. Daily aggregated telemetry data per device for analytical queries."
+    columns:
+      - name: summary_date
+        description: "The date of the summary. Used as the partitioning key."
+        tests:
+          - not_null
+      - name: device_id
+        description: "The unique ID of the device. Used as the clustering key."
+        tests:
+          - not_null
+      - name: avg_temperature
+        description: "Average temperature for the device on the summary date."
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: -50
+              max_value: 100
+  - name: int_telemetry_pii_hashed
+    description: "Silver layer view. Cleansed data with PII fields securely hashed."
+    columns:
+      - name: hashed_operator_name
+        description: "The SHA-256 hash of the operator's name combined with a salt."
+        tests:
+          - not_null
+      - name: hashed_operator_email
+        description: "The SHA-256 hash of the operator's email combined with a salt."
+        tests:
+          - not_null
+          - unique
