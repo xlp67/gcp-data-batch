@@ -48,3 +48,6 @@ dags/*.log
 *.pem
 *.key
 *.json # Service account keys, etc.
+
+
+GEMINI.md

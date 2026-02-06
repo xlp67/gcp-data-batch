@@ -178,5 +178,3 @@ Para que os jobs de dbt e Terraform possam interagir com o GCP, você precisará
     *   GCS (ex: `roles/storage.objectViewer`, `roles/storage.objectCreator`)
 
 ---
-
-Este projeto representa uma base sólida e profissional para demonstrar competências avançadas em engenharia de dados em um ambiente de nuvem moderno. A documentação completa e as justificativas técnicas refletem a mentalidade de um **Senior Data Architect e Tech Lead**, priorizando segurança, FinOps e qualidade.
