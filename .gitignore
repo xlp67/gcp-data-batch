@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.pytest_cache/
+.mypy_cache/
+
+# Data
+*.csv
+*.tsv
+*.log
+*.txt
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfplan
+*.tfstate
+*.tfstate.backup
+crash.log
+
+# dbt
+dbt_packages/
+target/
+dbt_modules/
+logs/
+
+# Airflow
+# For local development, if any logs are generated in the DAGs folder
+dags/*.log
+
+# IDEs and OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*~
+.#*
+
+# Secrets
+*.env
+.env
+*.pem
+*.key
+*.json # Service account keys, etc.
