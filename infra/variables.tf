@@ -1,12 +1,12 @@
 variable "region" {
-    default = "us-east1"
+  type = string
 }
 
 variable "dataset_id" {
   type = string
 }
 
-variable "friendly_name" {
+variable "friendly" {
   type = string
 }
 
@@ -22,7 +22,7 @@ variable "kms_key" {
   type = string
 }
 
-variable "kms_key_ring_name" {
+variable "kms_key_ring" {
   type = string
 }
 
