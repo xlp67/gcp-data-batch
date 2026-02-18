@@ -29,7 +29,7 @@ resource "google_bigquery_table" "this" {
     for_each            = var.tables
     dataset_id          = google_bigquery_dataset.this.dataset_id
     table_id            = each.key
-    schema              = each.value.schema
+    schema              = jsonencode(each.value.schema)
     deletion_protection = var.env == "prod" ? true : false
     dynamic "time_partitioning" {
     for_each = each.value.partition_field != null ? [1] : []

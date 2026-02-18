@@ -5,9 +5,18 @@ variable "expiration_ms" {}
 variable "kms_key" {}
 variable "kms_key_ring" {}
 variable "project_id" {}
-variable "tables" {}
-variable "env" {}
-variable "deletion_protection" {
-  type        = bool
-  default     = false
+
+variable "tables" {
+  type = map(object({
+    partition_field = optional(string)
+    schema          = list(object({
+      name        = string
+      type        = string
+      mode        = optional(string)
+      description = optional(string)
+    }))
+  }))
 }
+variable "env" {}
+
+
