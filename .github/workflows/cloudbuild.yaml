@@ -1,30 +1,9 @@
-name: Deploy DAGs to Airflow
-
-on:
-  push:
-    branches:
-      - develop
-    # paths:
-    #   - 'airflow/dags/**'
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    
-    steps:
+steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Authenticate to Google Cloud
-        id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
-          
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Copy Dags to Airflow's Bucket
-        id: copy-dags
-        run: gcloud storage cp -r airflow/dags/* gs://${{ vars.AIRFLOW_BUCKET_NAME }}/dags/
+                
+      - name: Hello World - Check GCS Connection
+        run: |
+          echo "Hello World! Autenticado com sucesso no GCP."
+          echo "Listando arquivos no bucket: ${{ vars.BUCKET_NAME }}"
+          gcloud storage ls gs://${{ vars.BUCKET_NAME }}/
