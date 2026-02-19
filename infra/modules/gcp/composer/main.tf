@@ -7,7 +7,6 @@ resource "google_composer_environment" "this" {
     node_config {
       service_account = var.composer_sa
     }
-
     software_config {
       image_version = var.composer_image_version
     }

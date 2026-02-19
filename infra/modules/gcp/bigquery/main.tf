@@ -19,10 +19,15 @@ resource "google_bigquery_table" "this" {
     schema              = jsonencode(each.value.schema)
     deletion_protection = var.env == "prod" ? true : false
     dynamic "time_partitioning" {
-    for_each = each.value.partition_field != null ? [1] : []
-    content {
-        type  = "DAY"
-        field = each.value.partition_field
+      for_each = each.value.partition_field != null ? [1] : []
+      content {
+          type  = "DAY"
+          field = each.value.partition_field
+      }
     }
-    }
+    lifecycle {
+    ignore_changes = [
+      encryption_configuration,
+    ]
+  }
 }

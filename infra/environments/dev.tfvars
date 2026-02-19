@@ -9,25 +9,25 @@ bucket_versioning = true
 uniform_bucket_level_access = true
 
 # KMS
-kms_key = "key_churn_dev"
-kms_key_ring = "key_ring_churn_dev"
+kms_key = "gcs-bucket"
+kms_key_ring = "gcs-bucket"
 
 # COMPOSER
 composer_name="composer-dev"
 composer_image_version = "composer-3-airflow-2"
 
 # CLOUDBUILD
-cloudbuild_trigger_name="trigger-name"
 github_branch="develop"
 github_owner="thiiagowilliam"
 github_repo = "gcp-data-batch"
-cloudbuild_trigger_path=".github/workflows/cloudbuild.yaml"
 app_installation_id="111001074" 
+cloudbuild_trigger_name="trigger-name"
+cloudbuild_trigger_path="cloudbuild.yaml"
 oauth_token_secret = "projects/327909419888/secrets/gcp-data-batch-github-oauthtoken-7e8c1d/versions/1"
 
 # BIGQUERY
-dataset_id = "churn_dev"
-friendly = "Dados de Churn [DEV]"
+dataset_id = "churn"
+friendly = "Dados de Churn"
 expiration_ms = 3600000
 tables = {
     "tabela_vendas" = {

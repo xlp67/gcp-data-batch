@@ -1,7 +1,30 @@
-steps:
-  # 1. Terraform Init
-  - id: 'terraform-init'
-    name: 'hashicorp/terraform:1.6.0'
-    entrypoint: 'ls'
-    args: ['-a']
-    dir: 'infra'
+name: Deploy DAGs to Airflow
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'airflow/dags/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
+          
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Copy Dags to Airflow's Bucket
+        id: copy-dags
+        run: gcloud storage cp -r airflow/dags/* gs://${{ vars.AIRFLOW_BUCKET_NAME }}/dags/

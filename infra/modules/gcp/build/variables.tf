@@ -7,5 +7,6 @@ variable "github_repo" {}
 variable "github_owner" {}
 variable "oauth_token_secret" {}
 variable "app_installation_id" {}
+variable "bucket_name" {}
 variable "region" {}
 variable "project_id" {}
