@@ -1,22 +1,49 @@
+module "iam" {
+  source = "./modules/gcp/iam"
+  project_id = var.project_id
+}
+
 module "kms" {
-  source       = "./modules/kms"
+  source       = "./modules/gcp/kms"
   project_id   = var.project_id
   kms_key      = var.kms_key
   kms_key_ring = var.kms_key_ring
   location     = var.location
 }
 
+module "gcs_bucket" {
+  source = "./modules/gcp/gcs"
+  location = var.location
+  project_id = var.project_id
+  bucket_name = var.bucket_name
+  kms_key = module.kms.kms_key.id
+  bucket_versioning = var.bucket_versioning
+  uniform_bucket_level_access = var.uniform_bucket_level_access
+  depends_on = [ module.kms ]
+}
+
+module "composer" {
+  source = "./modules/gcp/composer"
+  project_id = var.project_id
+  composer_name = var.composer_name
+  composer_sa = module.iam.composer_worker.id
+  composer_image_version = var.composer_image_version
+  region = var.region
+  depends_on = [ module.kms, module.iam ]
+}
+
 module "bigquery_dataset_churn" {
-  source        = "./modules/bigquery"
-  project_id    = var.project_id
-  dataset_id    = var.dataset_id
+  source        = "./modules/gcp/bigquery"
+  env           = var.env
+  tables        = var.tables
   friendly      = var.friendly
   location      = var.location
+  project_id    = var.project_id
+  dataset_id    = var.dataset_id
   expiration_ms = var.expiration_ms
   kms_key       = module.kms.kms_key.id
   kms_key_ring  = module.kms.kms_key.id
-  env           = var.env
-  tables        = var.tables
+  depends_on = [ module.kms ]
 }
 
 
