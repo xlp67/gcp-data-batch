@@ -48,13 +48,10 @@ module "bigquery_dataset_churn" {
 
 module "cloudbuild" {
   source                  = "./modules/gcp/build"
-  env                     = var.env
   region                  = var.region
-  location                = var.region
   project_id              = var.project_id
   github_repo             = var.github_repo
   github_owner            = var.github_owner
-  bucket_name             = module.gcs_bucket.bucket_name
   github_branch           = var.github_branch
   oauth_token_secret      = var.oauth_token_secret
   app_installation_id     = var.app_installation_id

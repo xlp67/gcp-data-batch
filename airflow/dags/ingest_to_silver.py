@@ -3,6 +3,7 @@ from airflow import DAG
 from airflow.providers.google.cloud.sensors.gcs import GCSObjectsWithPrefixExistenceSensor
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 
+# 
 PROJECT_ID = "seu-projeto-gcp"
 BUCKET_NAME = "seu-bucket-datalake"
 PREFIX = "datalake/" 
