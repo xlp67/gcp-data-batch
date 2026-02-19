@@ -26,6 +26,12 @@ resource "google_project_iam_member" "cloudbuild_builder" {
   member  = "serviceAccount:${local.cb_sa_email}"
 }
 
+resource "google_project_iam_member" "write_buckets" {
+  project = var.project_id
+  role    = "roles/storage.objectAdmin" 
+  member  = "serviceAccount:${local.cb_sa_email}"
+}
+
 resource "google_secret_manager_secret_iam_member" "secret_accessor" {
   secret_id = split("/versions/", var.oauth_token_secret)[0]
   role      = "roles/secretmanager.secretAccessor"

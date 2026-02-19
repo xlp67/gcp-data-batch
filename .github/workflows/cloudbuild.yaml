@@ -5,8 +5,8 @@ steps:
     args:
       - '-c'
       - |
-        echo $_BUCKET_NAME
-        gcloud storage cp -r airflow/dags/* gs://_BUCKET_NAME/dags/
+        # CORREÇÃO: Adicionado o $ na frente da variável de substituição
+        gcloud storage cp -r airflow/dags/* gs://$_BUCKET_NAME/dags/
 
 options:
   logging: CLOUD_LOGGING_ONLY
