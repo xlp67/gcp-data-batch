@@ -1,32 +1,41 @@
 steps:
   # 1. Terraform Init
-  - name: 'hashicorp/terraform:1.6.0' # Use a versão que preferir
+  - id: 'terraform-init'
+    name: 'hashicorp/terraform:1.6.0'
     args: ['init']
     dir: 'infra'
 
   # 2. Terraform Validate
-  - name: 'hashicorp/terraform:1.6.0'
+  - id: 'terraform-validate'
+    name: 'hashicorp/terraform:1.6.0'
     args: ['validate']
     dir: 'infra'
 
-  # 3. Terraform Plan
-  - name: 'hashicorp/terraform:1.6.0'
-    args: 
-      - 'plan'
-      - '-var-file=$_TF_ENV_PATH' 
-      - '-out=tfplan'
+  # 3. Terraform Plan (sempre roda e gera o tfplan)
+  - id: 'terraform-plan'
+    name: 'hashicorp/terraform:1.6.0'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        echo "🔍 Running plan with environment: ${_TF_ENV}"
+        terraform plan \
+          -var-file=${_TF_ENV_PATH} \
+          -out=tfplan
     dir: 'infra'
 
-  # 4. Terraform Apply (Só executa se for push na develop ou main)
-  - name: 'hashicorp/terraform:1.6.0'
+  # 4. Terraform Apply (só em develop ou main)
+  - id: 'terraform-apply'
+    name: 'hashicorp/terraform:1.6.0'
     entrypoint: 'sh'
-    args: 
+    args:
       - '-c'
       - |
         if [ "$BRANCH_NAME" = "develop" ] || [ "$BRANCH_NAME" = "main" ]; then
+          echo "🚀 Applying terraform on branch $BRANCH_NAME"
           terraform apply -auto-approve tfplan
         else
-          echo "Skipping apply for branch $BRANCH_NAME"
+          echo "⏭️ Skipping apply for branch $BRANCH_NAME"
         fi
     dir: 'infra'
 
