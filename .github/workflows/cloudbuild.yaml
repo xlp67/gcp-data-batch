@@ -1,49 +1,34 @@
-name: 'Terraform CI/CD'
+steps:
+  # 1. Terraform Init
+  - name: 'hashicorp/terraform:1.6.0' # Use a versão que preferir
+    args: ['init']
+    dir: 'infra'
 
-on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
+  # 2. Terraform Validate
+  - name: 'hashicorp/terraform:1.6.0'
+    args: ['validate']
+    dir: 'infra'
 
-jobs:
-  terraform:
-    name: 'Terraform'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./infra 
+  # 3. Terraform Plan
+  - name: 'hashicorp/terraform:1.6.0'
+    args: 
+      - 'plan'
+      - '-var-file=$_TF_ENV_PATH' 
+      - '-out=tfplan'
+    dir: 'infra'
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # 4. Terraform Apply (Só executa se for push na develop ou main)
+  - name: 'hashicorp/terraform:1.6.0'
+    entrypoint: 'sh'
+    args: 
+      - '-c'
+      - |
+        if [ "$BRANCH_NAME" = "develop" ] || [ "$BRANCH_NAME" = "main" ]; then
+          terraform apply -auto-approve tfplan
+        else
+          echo "Skipping apply for branch $BRANCH_NAME"
+        fi
+    dir: 'infra'
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-
-      - name: Set Environment Variables
-        id: set-env
-        run: |
-          if [[ "${{ github.ref_name }}" == "main" ]]; then
-            echo "TF_ENV=prod" >> $GITHUB_ENV
-          elif [[ "${{ github.ref_name }}" == "develop" ]]; then
-            echo "TF_ENV=dev" >> $GITHUB_ENV
-          else
-            echo "TF_ENV=dev" >> $GITHUB_ENV
-          fi
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        run: terraform plan -var-file="env/${{ env.TF_ENV }}.tfvars"
-
-      - name: Terraform Apply
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-        run: terraform apply -auto-approve -var-file="env/${{ env.TF_ENV }}.tfvars"
+options:
+  logging: CLOUD_LOGGING_ONLY
