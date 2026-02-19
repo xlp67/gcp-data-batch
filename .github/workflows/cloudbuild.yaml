@@ -2,38 +2,6 @@ steps:
   # 1. Terraform Init
   - id: 'terraform-init'
     name: 'hashicorp/terraform:1.6.0'
-    args: ['init']
+    entrypoint: 'ls'
+    args: ['-a']
     dir: 'infra'
-
-  # 2. Terraform Validate
-  - id: 'terraform-validate'
-    name: 'hashicorp/terraform:1.6.0'
-    args: ['validate']
-    dir: 'infra'
-
-  # 3. Terraform Plan (sempre gera o tfplan)
-  - id: 'terraform-plan'
-    name: 'hashicorp/terraform:1.6.0'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-        echo "Running plan with: ${_TF_ENV_PATH}"
-        terraform plan \
-          -var-file=${_TF_ENV_PATH} \
-          -out=tfplan
-    dir: 'infra'
-
-  # 4. Terraform Apply (sempre executa depois do plan)
-  - id: 'terraform-apply'
-    name: 'hashicorp/terraform:1.6.0'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-        echo "Applying terraform..."
-        terraform apply -auto-approve tfplan
-    dir: 'infra'
-
-options:
-  logging: CLOUD_LOGGING_ONLY
