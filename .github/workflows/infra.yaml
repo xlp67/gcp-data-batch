@@ -1,0 +1,49 @@
+name: 'Terraform CI/CD'
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./infra 
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Set Environment Variables
+        id: set-env
+        run: |
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            echo "TF_ENV=prod" >> $GITHUB_ENV
+          elif [[ "${{ github.ref_name }}" == "develop" ]]; then
+            echo "TF_ENV=dev" >> $GITHUB_ENV
+          else
+            echo "TF_ENV=dev" >> $GITHUB_ENV
+          fi
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -var-file="env/${{ env.TF_ENV }}.tfvars"
+
+      - name: Terraform Apply
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+        run: terraform apply -auto-approve -var-file="env/${{ env.TF_ENV }}.tfvars"
