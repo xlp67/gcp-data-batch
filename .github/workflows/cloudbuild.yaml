@@ -1,9 +1,9 @@
 steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-                
-      - name: Hello World - Check GCS Connection
-        run: |
-          echo "Hello World! Autenticado com sucesso no GCP."
-          echo "Listando arquivos no bucket: ${{ vars.BUCKET_NAME }}"
-          gcloud storage ls gs://${{ vars.BUCKET_NAME }}/
+  - id: 'Hello World'
+    name: 'ubuntu'
+    args:
+      - 'bash'
+      - '-c'
+      - |
+        echo "Hello World! Autenticado com sucesso no GCP via Cloud Build."
+        echo "A Service Account injetada foi: $_GCP_SERVICE_ACCOUNT"
