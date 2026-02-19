@@ -22,7 +22,7 @@ with DAG(
     dag_id='datalake_csv_to_bigquery',
     default_args=default_args,
     start_date=datetime(2023, 1, 1),
-    schedule_interval='@hourly',
+    schedule_interval='@daily',
     catchup=False,
     tags=['gcs', 'bigquery', 'sensor'],
 ) as dag:
