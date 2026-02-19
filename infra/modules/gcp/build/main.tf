@@ -65,9 +65,4 @@ resource "google_cloudbuild_trigger" "repo-trigger" {
     google_service_account_iam_member.cloudbuild_impersonate,
     google_project_iam_member.cloudbuild_builder
   ]
-
-  substitutions = {
-    "_TF_ENV" = ""
-    "_TF_ENV_PATH" = "./environments/${var.env}.tfvars"
-  }
 }

@@ -21,7 +21,7 @@ cloudbuild_trigger_name="data-batch-trigger"
 github_branch="develop"
 github_owner="thiiagowilliam"
 github_repo = "gcp-data-batch"
-cloudbuild_trigger_path=".github/workflows/cloudbuild.yaml"
+cloudbuild_trigger_path="cloudbuild.yaml"
 app_installation_id="111001074" 
 oauth_token_secret = "projects/327909419888/secrets/gcp-data-batch-github-oauthtoken-7e8c1d/versions/1"
 
