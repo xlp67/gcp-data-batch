@@ -5,7 +5,7 @@ steps:
     args:
       - '-c'
       - |
-        gcloud storage cp -r airflow/dags/* gs://$_BUCKET_NAME/dags/
+        gcloud storage cp -r airflow/dags/* gs://$_BUCKET_NAME/
 
 options:
   logging: CLOUD_LOGGING_ONLY
