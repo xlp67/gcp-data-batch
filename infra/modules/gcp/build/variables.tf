@@ -1,6 +1,11 @@
-variable "region" {}
-variable "cb_trigger_name" {}
-variable "cb_trigger_path" {}
-variable "github_owner" {}
-variable "github__name" {}
+variable "cloudbuild_trigger_name" {}
+variable "cloudbuild_trigger_path" {}
+variable "env" {}
 variable "github_branch" {}
+variable "location" {}
+variable "github_repo" {}
+variable "github_owner" {}
+variable "oauth_token_secret" {}
+variable "app_installation_id" {}
+variable "region" {}
+variable "project_id" {}

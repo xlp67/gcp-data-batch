@@ -11,19 +11,6 @@ resource "google_bigquery_dataset" "this" {
   }
 }
 
-resource "google_bigquery_dataset" "default" {
-    project = var.project_id
-    dataset_id                  = "foo"
-    friendly_name               = "test"
-    description                 = "This is a test description"
-    location                    = "EU"
-    default_table_expiration_ms = 3600000
-
-    labels = {
-    env = "default"
-    }
-    }
-
 resource "google_bigquery_table" "this" {
     project = var.project_id
     for_each            = var.tables

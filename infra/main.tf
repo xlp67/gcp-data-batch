@@ -22,6 +22,21 @@ module "gcs_bucket" {
   depends_on = [ module.kms ]
 }
 
+module "cloudbuild" {
+  source = "./modules/gcp/build"
+  project_id = var.project_id
+  env = var.env
+  github_repo = var.github_repo
+  github_branch = var.github_branch
+  cloudbuild_trigger_name = var.cloudbuild_trigger_name
+  cloudbuild_trigger_path = var.cloudbuild_trigger_path
+  region = var.region
+  location = var.location
+  github_owner = var.github_owner
+  oauth_token_secret = var.oauth_token_secret
+  app_installation_id = var.app_installation_id
+}
+
 module "composer" {
   source = "./modules/gcp/composer"
   project_id = var.project_id

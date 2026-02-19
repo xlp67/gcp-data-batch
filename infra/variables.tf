@@ -21,3 +21,12 @@ variable "uniform_bucket_level_access" {}
 # COMPOSER
 variable "composer_name" {}
 variable "composer_image_version" {} 
+
+# CLOUDBUILD
+variable "github_repo" {}
+variable "github_owner" {}
+variable "github_branch" {}
+variable "oauth_token_secret" {}
+variable "cloudbuild_trigger_name" {}
+variable "cloudbuild_trigger_path" {}
+variable "app_installation_id" {}
