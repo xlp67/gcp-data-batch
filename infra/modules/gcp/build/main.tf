@@ -22,6 +22,8 @@ resource "google_project_iam_member" "cloudbuild_builder" {
   member  = "serviceAccount:${google_service_account.cloudbuild.email}"
 }
 
+
+
 resource "google_secret_manager_secret_iam_member" "secret_accessor" {
   secret_id = split("/versions/", var.oauth_token_secret)[0]
   role      = "roles/secretmanager.secretAccessor"
