@@ -50,7 +50,7 @@ resource "google_cloudbuildv2_repository" "this" {
   remote_uri        = "https://github.com/${var.github_owner}/${var.github_repo}.git"
 }
 
-resource "google_cloudbuild_trigger" "repo-trigger" {
+resource "google_cloudbuild_trigger" "this" {
   name            = "${var.cloudbuild_trigger_name}-repo"
   location        = var.region
   filename        = var.cloudbuild_trigger_path
@@ -62,7 +62,5 @@ resource "google_cloudbuild_trigger" "repo-trigger" {
       branch = "^${var.github_branch}$"
     }
   }
-  substitutions = {
-    "_GCP_SERVICE_ACCOUNT" = var.bucket_name
-  }
+  substitutions = var.trigger_substitutions
 }

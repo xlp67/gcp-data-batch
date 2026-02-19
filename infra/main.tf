@@ -53,7 +53,7 @@ module "cloudbuild" {
   github_repo             = var.github_repo
   github_owner            = var.github_owner
   github_branch           = var.github_branch
-  bucket_name = module.gcs_bucket.bucket_name
+  trigger_substitutions = var.trigger_substitutions
   oauth_token_secret      = var.oauth_token_secret
   app_installation_id     = var.app_installation_id
   cloudbuild_trigger_name = var.cloudbuild_trigger_name

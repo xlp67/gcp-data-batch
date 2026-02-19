@@ -30,3 +30,5 @@ variable "oauth_token_secret" {}
 variable "app_installation_id" {}
 variable "cloudbuild_trigger_name" {}
 variable "cloudbuild_trigger_path" {}
+
+variable "trigger_substitutions" {}

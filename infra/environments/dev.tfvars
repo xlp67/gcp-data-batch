@@ -24,6 +24,9 @@ app_installation_id="111001074"
 cloudbuild_trigger_name="trigger-name"
 cloudbuild_trigger_path=".github/workflows/cloudbuild.yaml"
 oauth_token_secret = "projects/327909419888/secrets/gcp-data-batch-github-oauthtoken-7e8c1d/versions/1"
+trigger_substitutions = {
+  "_BUCKET_NAME"         = "xlp67-interprise-bucket"
+}
 
 # BIGQUERY
 dataset_id = "churn"
