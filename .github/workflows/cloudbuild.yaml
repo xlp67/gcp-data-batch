@@ -10,24 +10,22 @@ steps:
         echo "[INFO] Starting selective sync deployment."
         echo "[INFO] Target GCS Bucket: gs://${_BUCKET_NAME}"
 
-        # Retrieve git history for diff comparison
         git fetch --unshallow || git fetch --depth=2
 
         CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
         
         echo "[INFO] Files modified in the current commit:"
-        echo "$CHANGED_FILES"
+        # O uso da variável no Bash exige $$ para não quebrar o Cloud Build
+        echo "$$CHANGED_FILES"
         
-        # DAGs synchronization
-        if echo "$CHANGED_FILES" | grep -q "^airflow/dags/"; then
+        if echo "$$CHANGED_FILES" | grep -q "^airflow/dags/"; then
           echo "[INFO] Modifications detected in airflow/dags/. Initiating rsync..."
           gcloud storage rsync airflow/dags gs://${_BUCKET_NAME}/dags/ --recursive --delete-unmatched
         else
           echo "[INFO] No modifications detected in airflow/dags/. Skipping synchronization."
         fi
 
-        # Contracts synchronization
-        if echo "$CHANGED_FILES" | grep -q "^contracts/"; then
+        if echo "$$CHANGED_FILES" | grep -q "^contracts/"; then
           echo "[INFO] Modifications detected in contracts/. Initiating rsync..."
           gcloud storage rsync contracts gs://${_BUCKET_NAME}/contracts/ --recursive --delete-unmatched
         else
