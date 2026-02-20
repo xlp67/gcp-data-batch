@@ -20,6 +20,7 @@ default_args = {
 }
 
 def print_env_vars():
+    print("=" * 75)
     print(f"Projeto GCP: {PROJECT_ID}")
     print(f"Bucket GCS:  {BUCKET_NAME}")
     print(f"Dataset BQ:  {DATASET_NAME}")
