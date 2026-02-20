@@ -31,11 +31,11 @@ module "composer" {
   composer_sa            = module.iam.composer_worker.id
   depends_on             = [module.kms, module.iam]
   env_variables = {
-    "AIRFLOW_GCP_PROJECT_ID"   = var.project_id
-    "AIRFLOW_GCP_BUCKET_NAME"  = module.gcs_bucket.bucket_name
-    "AIRFLOW_GCP_PREFIX_PATH"  = "datalake/"
-    "AIRFLOW_GCP_DATASET_NAME" = module.bigquery_dataset.dataset.name
-    "AIRFLOW_GCP_TABLE_NAME"   = module.bigquery_dataset.table.name
+    "GCP_PROJECT_ID"   = var.project_id
+    "GCP_BUCKET_NAME"  = module.gcs_bucket.bucket_name
+    "GCP_PREFIX_PATH"  = "datalake/"
+    "GCP_DATASET_NAME" = module.bigquery_dataset.dataset_id
+    "GCP_TABLE_NAME"   = module.bigquery_dataset.tables["tabela_vendas"].table_id
   }
 }
 

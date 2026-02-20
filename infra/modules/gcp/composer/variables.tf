@@ -3,4 +3,4 @@ variable "composer_image_version" {}
 variable "region" {}
 variable "project_id" {}
 variable "composer_sa" {}
-variable "env_variables" { type = map(string) }
+variable "env_variables" {}

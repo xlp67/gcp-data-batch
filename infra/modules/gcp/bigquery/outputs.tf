@@ -1,7 +1,9 @@
-output "dataset" {
-  value = google_bigquery_dataset.this
+# modules/gcp/bigquery/outputs.tf
+
+output "dataset_id" {
+  value       = google_bigquery_dataset.this.dataset_id
 }
 
-output "table" {
-  value = google_bigquery_table.this
+output "tables" {
+  value       = google_bigquery_table.this
 }

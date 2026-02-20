@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 from airflow import DAG
+from airflow.operators.python import PythonOperator
 from airflow.providers.google.cloud.sensors.gcs import GCSObjectsWithPrefixExistenceSensor
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 import os
 
-PROJECT_ID   = os.getenv("AIRFLOW_GCP_PROJECT_ID")
+PROJECT_ID   = os.getenv("AIRFLOW_GCP_PROJECT")
 BUCKET_NAME  = os.getenv("AIRFLOW_GCP_BUCKET_NAME")
 PREFIX_PATH  = os.getenv("AIRFLOW_GCP_PREFIX_PATH")
 DATASET_NAME = os.getenv("AIRFLOW_GCP_DATASET_NAME")
@@ -15,8 +16,14 @@ default_args = {
     'depends_on_past': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
-    'poke': 'reschedule'
 }
+
+def print_env_vars():
+    print(f"Projeto GCP: {PROJECT_ID}")
+    print(f"Bucket GCS:  {BUCKET_NAME}")
+    print(f"Dataset BQ:  {DATASET_NAME}")
+    print(f"Tabela BQ:   {TABLE_NAME}")
+    print(f"Caminho:     {PREFIX_PATH}")
 
 with DAG(
     dag_id='datalake_csv_to_bigquery',
@@ -26,25 +33,29 @@ with DAG(
     catchup=False,
     tags=['gcs', 'bigquery', 'sensor'],
 ) as dag:
+    
+    debug_vars = PythonOperator(
+        task_id='debug_vars',
+        python_callable=print_env_vars
+    # )
+    # espera_por_arquivo_csv = GCSObjectsWithPrefixExistenceSensor(
+    #     task_id='espera_por_arquivo_csv',
+    #     bucket=BUCKET_NAME,
+    #     prefix=PREFIX_PATH,
+    #     poke_interval=60,
+    #     timeout=7200,
+    #     mode='reschedule'
+    # )
 
-    espera_por_arquivo_csv = GCSObjectsWithPrefixExistenceSensor(
-        task_id='espera_por_arquivo_csv',
-        bucket=BUCKET_NAME,
-        prefix=PREFIX_PATH,
-        poke_interval=60,
-        timeout=7200,
-        mode='reschedule'
+    # carrega_csv_no_bq = GCSToBigQueryOperator(
+    #     task_id='carrega_csv_no_bq',
+    #     bucket=BUCKET_NAME,
+    #     source_objects=[f'{PREFIX_PATH}*.csv'],
+    #     destination_project_dataset_table=f'{PROJECT_ID}.{DATASET_NAME}.{TABLE_NAME}',
+    #     source_format='CSV',
+    #     skip_leading_rows=1,
+    #     write_disposition='WRITE_APPEND',
+    #     autodetect=True,
     )
-
-    carrega_csv_no_bq = GCSToBigQueryOperator(
-        task_id='carrega_csv_no_bq',
-        bucket=BUCKET_NAME,
-        source_objects=[f'{PREFIX_PATH}*.csv'],
-        destination_project_dataset_table=f'{PROJECT_ID}.{DATASET_NAME}.{TABLE_NAME}',
-        source_format='CSV',
-        skip_leading_rows=1,
-        write_disposition='WRITE_APPEND',
-        autodetect=True,
-    )
-
-    espera_por_arquivo_csv >> carrega_csv_no_bq
+    debug_vars
+    # espera_por_arquivo_csv >> carrega_csv_no_bq
