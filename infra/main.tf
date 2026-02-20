@@ -59,7 +59,7 @@ module "cloudbuild" {
   github_repo             = var.github_repo
   github_owner            = var.github_owner
   github_branch           = var.github_branch
-  included_files          = [var.included_files]
+  included_files          = var.included_files
   oauth_token_secret      = var.oauth_token_secret
   app_installation_id     = var.app_installation_id
   cloudbuild_trigger_name = var.cloudbuild_trigger_name
@@ -67,7 +67,7 @@ module "cloudbuild" {
   trigger_substitutions = {
     "_BUCKET_NAME" = module.composer.composer_bucket_name
   }
-  depends_on = [module.gcs_bucket]
+  depends_on = [module.gcs_bucket, module.composer]
 }
 
 
