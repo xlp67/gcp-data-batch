@@ -5,11 +5,11 @@ from airflow.providers.google.cloud.sensors.gcs import GCSObjectsWithPrefixExist
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 import os
 
-PROJECT_ID   = os.getenv("AIRFLOW_GCP_PROJECT")
-BUCKET_NAME  = os.getenv("AIRFLOW_GCP_BUCKET_NAME")
-PREFIX_PATH  = os.getenv("AIRFLOW_GCP_PREFIX_PATH")
-DATASET_NAME = os.getenv("AIRFLOW_GCP_DATASET_NAME")
-TABLE_NAME   = os.getenv("AIRFLOW_GCP_TABLE_NAME")
+PROJECT_ID   = os.getenv("AIRFLOW_VAR_GCP_PROJECT_ID")
+BUCKET_NAME  = os.getenv("AIRFLOW_VAR_GCP_BUCKET_NAME")
+PREFIX_PATH  = os.getenv("AIRFLOW_VAR_GCP_PREFIX_PATH")
+DATASET_NAME = os.getenv("AIRFLOW_VAR_GCP_DATASET_NAME")
+TABLE_NAME   = os.getenv("AIRFLOW_VAR_GCP_TABLE_NAME")
 
 default_args = {
     'owner': 'data_team',
