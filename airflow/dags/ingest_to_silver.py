@@ -4,6 +4,7 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.google.cloud.sensors.gcs import GCSObjectsWithPrefixExistenceSensor
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 import os
+import subprocess
 
 PROJECT_ID   = os.getenv("AIRFLOW_VAR_GCP_PROJECT_ID")
 BUCKET_NAME  = os.getenv("AIRFLOW_VAR_GCP_BUCKET_NAME")
@@ -24,7 +25,7 @@ def print_env_vars():
     print(f"Dataset BQ:  {DATASET_NAME}")
     print(f"Tabela BQ:   {TABLE_NAME}")
     print(f"Caminho:     {PREFIX_PATH}")
-
+    print(subprocess.run(["env"]).stdout)
 with DAG(
     dag_id='datalake_csv_to_bigquery',
     default_args=default_args,
