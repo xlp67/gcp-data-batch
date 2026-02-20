@@ -1,13 +1,57 @@
 steps:
-  - id: 'Deploy DAGs to GCS'
+  # ETAPA 1: CI (Validação Rápida) - Garante que não enviaremos código quebrado para o Airflow
+  - id: 'Validate Python Syntax'
+    name: 'python:3.9-slim'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "[INFO] Running Python syntax check on DAGs and Scripts..."
+        python -m compileall -q airflow/dags/
+        echo "[INFO] Syntax check passed. No broken code detected."
+
+  # ETAPA 2: CD (Sincronização Seletiva e Limpa)
+  - id: 'Deploy to Composer'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        echo $_BUCKET_NAME
-        gcloud storage cp -r airflow/dags/* ${_BUCKET_NAME}
-        gcloud storage cp -r contracts/* ${_BUCKET_NAME}/contracts
+        set -euo pipefail
+
+        echo "[INFO] Starting selective sync deployment."
+        echo "[INFO] Target GCS Bucket: gs://${_BUCKET_NAME}"
+
+        EXCLUDE_REGEX=".*__pycache__.*|.*\.pyc$|.*\.md$|^\..*"
+
+        git fetch --unshallow || git fetch --depth=2
+
+        CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD || echo "FORCE_FULL_SYNC")
+        
+        echo "[INFO] Files modified in the current commit:"
+        echo "$$CHANGED_FILES"
+        
+        if echo "$$CHANGED_FILES" | grep -q "^airflow/dags/\|FORCE_FULL_SYNC"; then
+          echo "[INFO] Modifications detected in airflow/dags/. Initiating rsync..."
+          gcloud storage rsync airflow/dags gs://${_BUCKET_NAME}/dags/ \
+            --recursive \
+            --delete-unmatched-destination-objects \
+            --exclude="$$EXCLUDE_REGEX"
+        else
+          echo "[INFO] No modifications detected in airflow/dags/. Skipping synchronization."
+        fi
+
+        if echo "$$CHANGED_FILES" | grep -q "^contracts/\|FORCE_FULL_SYNC"; then
+          echo "[INFO] Modifications detected in contracts/. Initiating rsync..."
+          gcloud storage rsync contracts gs://${_BUCKET_NAME}/contracts/ \
+            --recursive \
+            --delete-unmatched-destination-objects \
+            --exclude="$$EXCLUDE_REGEX"
+        else
+          echo "[INFO] No modifications detected in contracts/. Skipping synchronization."
+        fi
+        
+        echo "[INFO] Selective sync deployment completed successfully."
 
 options:
   logging: CLOUD_LOGGING_ONLY

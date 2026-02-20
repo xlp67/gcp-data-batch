@@ -2,7 +2,7 @@
 
 *.tfstate
 *.tfstate.*
-*tfvars
+*.tfvars
 
 crash.log
 
